@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class ConditionModel(models.Model):
 	name = models.CharField(max_length=200, blank=False)
 	api  = models.CharField(max_length=200, blank=False)

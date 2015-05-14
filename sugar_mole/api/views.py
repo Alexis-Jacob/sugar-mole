@@ -1,12 +1,27 @@
 from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
-from serializers import UserSerializer
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework import authentication, permissions
+from serializers import *
+from models import *
+
+
+class ScenarioView(APIView):
+	def get(self, request):
+		return Response(ScenarioSerializer(ScenarioModel.objects.all(), many=True).data)
+
+class ConditionView(APIView):
+	def get(self, request):
+		return Response(ConditionSerializer(ConditionModel.objects.all(), many=True).data)
+
+class ActionView(APIView):
+	def get(self, request):
+		return Response(ActionSerializer(ActionModel.objects.all(), many=True).data)
+
 
 class UserView(APIView):
     """
