@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login
 from rest_framework import authentication, permissions
 from serializers import *
 from models import *
-
+import uuid as unique_uuid
 
 class ScenarioView(APIView):
 	def get(self, request):
@@ -21,6 +21,44 @@ class ConditionView(APIView):
 class ActionView(APIView):
 	def get(self, request):
 		return Response(ActionSerializer(ActionModel.objects.all(), many=True).data)
+
+class HouseView(APIView):
+	def get(self, request, uuid=None):
+		if not uuid:
+			return Response(HouseSerializer(HouseModel.objects.all(), many=True).data)
+		try:
+			return Response(HouseSerializer(HouseModel.objects.get(unique_uuid=uuid), many=True).data)
+		except HouseModel.DoesNotExist:
+			return Response(status=status.HTTP_404_NOT_FOUND)
+
+	def post(self, request, uuid=None):
+		while True:
+			u = unique_uuid.uuid4()
+			try:
+				HouseModel.objects.get(unique_uuid=u)
+			except HouseModel.DoesNotExist:
+				house = HouseModel()
+				house.unique_uuid = str(u)
+				house.save()
+				return Response(HouseSerializer(house).data, status=status.HTTP_201_CREATED)
+
+
+	def put(self, request, uuid):
+		if not uuid:
+			return Response({"response": "you need to specify the uuid of the house"}, status=status.HTTP_400_BAD_REQUEST)
+
+		try:
+			house = HouseModel.objects.get(unique_uuid=uuid)
+			if not request.data.has_key('scenario_name'):
+				return Response({"response" : "missing key scenario_name"}, status=status.HTTP_400_BAD_REQUEST)
+			try:
+				scenario = ScenarioModel.objects.get(name=request.data["scenario_name"])
+				house.scenarios.add(scenario) #add a scenario
+			except ScenarioModel.DoesNotExist:
+				return Response({"response": "scenario not found"}, status=status.HTTP_404_NOT_FOUND)
+
+		except HouseModel.DoesNotExist:
+			return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class UserView(APIView):

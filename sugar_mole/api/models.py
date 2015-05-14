@@ -1,5 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
 
+class APIModel(models.Model):
+	name = models.CharField(max_length=200, blank=False)
 
 class ConditionModel(models.Model):
 	name = models.CharField(max_length=200, blank=False)
@@ -16,3 +19,9 @@ class ScenarioModel(models.Model):
 	type = models.BooleanField(default=True) #true -> recurrent / false -> ponctuel
 	conditions = models.ManyToManyField(ConditionModel)
 	actions = models.ManyToManyField(ActionModel)
+
+class HouseModel(models.Model):
+	unique_uuid = models.CharField(max_length=200, blank=False)
+	members = models.ManyToManyField(User, blank=True)
+	api_available = models.ManyToManyField(APIModel, blank=True)
+	scenarios = models.ManyToManyField(ScenarioModel, blank=True)

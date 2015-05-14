@@ -21,3 +21,10 @@ class ScenarioSerializer(serializers.ModelSerializer):
 	conditions = ConditionSerializer(many=True)
 	class Meta:
 		model = ScenarioModel
+
+class HouseSerializer(serializers.ModelSerializer):
+	members = UserSerializer(many=True)
+	scenarios = ScenarioSerializer(many=True)
+	class Meta:
+		model = HouseModel
+
