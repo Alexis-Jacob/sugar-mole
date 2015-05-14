@@ -17,5 +17,7 @@ class ActionSerializer(serializers.ModelSerializer):
 		model = ActionModel
 
 class ScenarioSerializer(serializers.ModelSerializer):
+	actions = ActionSerializer(many=True)
+	conditions = ConditionSerializer(many=True)
 	class Meta:
 		model = ScenarioModel

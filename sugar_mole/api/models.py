@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class ConditionModel(models.Model):
 	name = models.CharField(max_length=200, blank=False)
 	api  = models.CharField(max_length=200, blank=False)
@@ -14,4 +15,4 @@ class ScenarioModel(models.Model):
 	name = models.CharField(max_length=200, blank=False) 
 	type = models.BooleanField(default=True) #true -> recurrent / false -> ponctuel
 	conditions = models.ManyToManyField(ConditionModel)
-	action = models.ManyToManyField(ActionModel)
+	actions = models.ManyToManyField(ActionModel)
