@@ -8,9 +8,6 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate, login
 from rest_framework import authentication, permissions
 
-
-
-
 class UserView(APIView):
     """
     API endpoint that allows users to be viewed or edited.
