@@ -33,3 +33,33 @@
   	* ```HTTP_401``` if the password is wrong
 
 	
+### 2 House:
+* url:  ```http://54.72.214.104/api/house/```
+* method: ```GET```
+    * Get all the informations about all the house
+    * You can add the uuid of the house at the end in order to get the information avbout a given house: ```http://54.72.214.104/api/house/b26d86c6-4864-4a29-ad07-3516f2bd5305/```
+    * Return a json list of the scenarios (conditions and actions)
+
+* method: ```POST```
+    * Create a new house
+    * return: ```HTTP_201``` with the description of the house in the ```response```field
+    > *hint: save the uuid of the house*
+
+* method: ```PUT```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+dsfsdf

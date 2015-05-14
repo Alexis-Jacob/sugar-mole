@@ -40,7 +40,7 @@ class HouseView(APIView):
 				house = HouseModel()
 				house.unique_uuid = str(u)
 				house.save()
-				return Response(HouseSerializer(house).data, status=status.HTTP_201_CREATED)
+				return Response({"response" : HouseSerializer(house).data}, status=status.HTTP_201_CREATED)
 
 
 	def put(self, request, uuid):
