@@ -47,7 +47,7 @@
 
 * Method: ```PUT```
 	* Add or remove a scenario from the house
-	* Url: ```http://54.72.214.104/api/house/uuid/```
+	* Url: ```http://54.72.214.104/api/house/b26d86c6-4864-4a29-ad07-3516f2bd5305/```
 	* Body param:  
 		- ```scenario_name``` with the name of the scenario
 		- ```option``` to add or remove; value are ```add``` or ```everything not add``` 
@@ -59,18 +59,3 @@
 		}
 		```
 	* Return: ```HTTP_200````or ```HTTP_404```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-dsfsdf
