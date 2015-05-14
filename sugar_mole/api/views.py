@@ -49,11 +49,15 @@ class HouseView(APIView):
 
 		try:
 			house = HouseModel.objects.get(unique_uuid=uuid)
-			if not request.data.has_key('scenario_name'):
-				return Response({"response" : "missing key scenario_name"}, status=status.HTTP_400_BAD_REQUEST)
+			if not request.data.has_key('scenario_name') or not request.data.has_key('option'):
+				return Response({"response" : "missing key scenario_name or option"}, status=status.HTTP_400_BAD_REQUEST)
 			try:
 				scenario = ScenarioModel.objects.get(name=request.data["scenario_name"])
-				house.scenarios.add(scenario) #add a scenario
+				if request.data['option'] == 'add':
+					house.scenarios.add(scenario) #add a scenario
+				else:
+					house.scenario.remove(scenario)
+				house.save()
 			except ScenarioModel.DoesNotExist:
 				return Response({"response": "scenario not found"}, status=status.HTTP_404_NOT_FOUND)
 
