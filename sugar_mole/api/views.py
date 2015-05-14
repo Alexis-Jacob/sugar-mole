@@ -58,6 +58,7 @@ class HouseView(APIView):
 				else:
 					house.scenario.remove(scenario)
 				house.save()
+				return Response(status=status.HTTP_200_OK)
 			except ScenarioModel.DoesNotExist:
 				return Response({"response": "scenario not found"}, status=status.HTTP_404_NOT_FOUND)
 
