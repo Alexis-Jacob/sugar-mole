@@ -260,6 +260,20 @@ class NetAtmo(IAPI):
 	def __init__(self):
 		self.name = "netatmo"
 
+	def __purify__(self, device):
+		tmp = {}
+		data = device["dashboard_data"]
+		if device["type"] == "NAModule4" or device["type"] == "NAModule1":
+			tmp = {"name" : device["module_name"], "data" : json.dumps({"api" : "netatmo", "device_id" : device["_id"]})}
+			tmp["type"] = 1
+			tmp["desc"] = {"temperature" : data["Temperature"], "humidity" : data["Humidity"]}
+			if data.has_key("CO2"): tmp["desc"]["CO2"] = data["CO2"]
+		elif device["type"] == "NAModule2":
+			tmp = {"name" : device["module_name"], "data" : json.dumps({"api" : "netatmo", "device_id" : device["_id"]})}
+			tmp["type"] = 2
+			tmp["desc"] =  {"GustStrength" : data["GustStrength"], "WindStrength" : data["WindStrength"], "GustAngle" : data["GustAngle"], "WindAngle" : data["WindAngle"]}
+		return tmp
+
 	def auth(self, kwargs):
 		self.clt = ClientAuth(**kwargs)
 
@@ -272,21 +286,16 @@ class NetAtmo(IAPI):
 		for d in devList.modulesNamesList():
 			device = devList.moduleByName(d)
 			if device:
-				tmp = {}
-				print device["module_name"]
-				data = device["dashboard_data"]
-				if device["type"] == "NAModule4" or device["type"] == "NAModule1":
-					tmp = {"name" : device["module_name"], "data" : json.dumps({"api" : "netatmo", "device_id" : device["_id"]})}
-					tmp["type"] = 1
-					tmp["desc"] = {"temperature" : data["Temperature"], "humidity" : data["Humidity"]}
-					if data.has_key("CO2"): tmp["desc"]["CO2"] = data["CO2"]
-				elif device["type"] == "NAModule2":
-					tmp = {"name" : device["module_name"], "data" : json.dumps({"api" : "netatmo", "device_id" : device["_id"]})}
-					tmp["type"] = 2
-					tmp["desc"] =  {"GustStrength" : data["GustStrength"], "WindStrength" : data["WindStrength"], "GustAngle" : data["GustAngle"], "WindAngle" : data["WindAngle"]}
+				tmp = self.__purify__(device)
 				if len(tmp) > 0:
 					rep.append(tmp)
 		return rep
+
+	def getDeviceInfo(self, data):
+		devList = DeviceList(self.clt)
+		return self.__purify__(devList.moduleById(data))
+		
+
 
 #########################################################################
 	

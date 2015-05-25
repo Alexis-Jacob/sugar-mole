@@ -7,3 +7,6 @@ class IAPI(object):
 
 	def getDevicesList(self):
 		raise NotImplemented("error")
+
+	def getDeviceInfo(self, data):
+		raise NotImplemented("error")

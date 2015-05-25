@@ -153,18 +153,38 @@ class UserView(APIView):
 class DevicesInfos(APIView):
 	#authentication_classes = (authentication.TokenAuthentication,)
 	#permission_classes = (permissions.IsAuthenticated,)
+	apiLst = {"netatmo" : Netatmo.NetAtmo}
 	def get(self, request):
-		apiLst = {"netatmo" : Netatmo.NetAtmo}
-		for house in HouseModel.objects.all():##Check in the orm if best way to do it 
-			for user in house.members.all():
-				if user == request.user:
-					rep = []
-					for api in house.api_available.all():
-						if apiLst.has_key(api.name):
-							tmp = apiLst[api.name]()
-							authData = json.loads(api.data)
-							tmp.auth(authData)
-							rep = rep + tmp.getDevicesList()
-					return Response(rep)
 
-		return Response(status=status.HTTP_200_OK)
+		if not request.data.has_key("api_name") or not request.data.has_key('data'):
+			for house in HouseModel.objects.all():##Check in the orm if best way to do it 
+				for user in house.members.all():
+					if user == request.user:
+						rep = []
+						for api in house.api_available.all():
+							if self.apiLst.has_key(api.name):
+								tmp = self.apiLst[api.name]()
+								authData = json.loads(api.data)
+								tmp.auth(authData)
+								rep = rep + tmp.getDevicesList()
+						return Response(rep)
+		api_name = request.data["api_name"]
+
+
+	def put(self, request):
+		if request.data.has_key("data"):
+			try:
+				data = json.loads(request.data["data"])
+			except ValueError:
+				return Response(status=status.HTTP_400_BAD_REQUEST)
+			api_name = data["api"]
+			for house in HouseModel.objects.all():##Check in the orm if best way to do it 
+				for user in house.members.all():
+					if user == request.user:
+						for api in house.api_available.all():
+							if self.apiLst.has_key(api.name) and api.name == api_name:
+								tmp = self.apiLst[api.name]()
+								authData = json.loads(api.data)
+								tmp.auth(authData)
+								return Response(tmp.getDeviceInfo(data['device_id']))
+		return Response(status=status.HTTP_404_NOT_FOUND)
