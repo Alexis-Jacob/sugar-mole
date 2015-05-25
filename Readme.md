@@ -122,7 +122,6 @@
             "humidity": 48
         }
     }, 
-    {}, 
     {
         "type": 1, 
         "data": "{\"api\": \"netatmo\", \"device_id\": \"02:00:00:04:c5:b4\"}", 
