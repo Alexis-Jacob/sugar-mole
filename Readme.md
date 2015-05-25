@@ -58,4 +58,14 @@
 			"option" : "add"
 		}
 		```
+    - ```api``` if you want to register to a new api: the other parameters depends on the api (check #3)
+
 	* Return: ```HTTP_200````or ```HTTP_404```
+
+
+
+### 3 Api Details:
+* Url:  ```http://54.72.214.104/api/apiDetails/```
+* Method: ```GET```
+    * Get all the informations needed in order to register a new trademark 
+    * Return a json list of api name and parameters 
