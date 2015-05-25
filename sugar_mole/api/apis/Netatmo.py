@@ -284,7 +284,8 @@ class NetAtmo(IAPI):
 					tmp = {"name" : device["module_name"], "data" : json.dumps({"api" : "netatmo", "device_id" : device["_id"]})}
 					tmp["type"] = 2
 					tmp["desc"] =  {"GustStrength" : data["GustStrength"], "WindStrength" : data["WindStrength"], "GustAngle" : data["GustAngle"], "WindAngle" : data["WindAngle"]}
-				rep.append(tmp)
+				if len(tmp) > 0:
+					rep.append(tmp)
 		return rep
 
 #########################################################################
