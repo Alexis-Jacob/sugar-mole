@@ -10,6 +10,18 @@ from serializers import *
 from models import *
 import uuid as unique_uuid
 
+
+class APIDetails(APIView):
+	#TODO generic stuff
+	def get(self, request):
+		netatmo = ["secret_access_key", "secret_id", "username", "password"]
+
+		rep = {
+		"netatmo" : netatmo,
+		}
+
+		return Response({"response": rep})
+
 class ScenarioView(APIView):
 	def get(self, request):
 		return Response(ScenarioSerializer(ScenarioModel.objects.all(), many=True).data)
@@ -49,22 +61,37 @@ class HouseView(APIView):
 
 		try:
 			house = HouseModel.objects.get(unique_uuid=uuid)
-			if not request.data.has_key('scenario_name') or not request.data.has_key('option'):
-				return Response({"response" : "missing key scenario_name or option"}, status=status.HTTP_400_BAD_REQUEST)
-			try:
-				scenario = ScenarioModel.objects.get(name=request.data["scenario_name"])
-				if request.data['option'] == 'add':
-					house.scenarios.add(scenario) #add a scenario
-				else:
-					house.scenario.remove(scenario)
-				house.save()
-				return Response(status=status.HTTP_200_OK)
-			except ScenarioModel.DoesNotExist:
-				return Response({"response": "scenario not found"}, status=status.HTTP_404_NOT_FOUND)
+			if request.data.has_key('scenario_name') and request.data.has_key('option'):
+				try:
+					scenario = ScenarioModel.objects.get(name=request.data["scenario_name"])
+					if request.data['option'] == 'add':
+						house.scenarios.add(scenario) #add a scenario
+					elif request.data["option"] == "remove":
+						house.scenario.remove(scenario)
+					house.save()
+					return Response(status=status.HTTP_200_OK)
+				except ScenarioModel.DoesNotExist:
+					return Response({"response": "scenario not found"}, status=status.HTTP_404_NOT_FOUND)
+			elif request.data.has_key('api'):
+				if name == "netatmo":
+					if request.data.has_key('secret_id') and request.data.has_key('secret_access_key') and request.data.has_key('username') and request.data.has_key('password'):
+						#todo : check auth
+						data = {
+							"secret_id" : request.data["secret_id"], 
+							"secret_access_key" : request.data["secret_access_key"],
+							"username" : request.data["username"],
+							"password" : request.data["password"]
+							}
+						api = APIModel(name="netatmo", data=json.dumps(data)) #TODO : crypt this stuff :D 
+						api.save()
+						house.api_available.add(api) 
+						house.save()
+			else:
+				return Response({"response" : "missing an option"}, status=status.HTTP_400_BAD_REQUEST)
 
 		except HouseModel.DoesNotExist:
 			return Response(status=status.HTTP_404_NOT_FOUND)
-
+		return Response({"response" : "missing an option"}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserView(APIView):
     """

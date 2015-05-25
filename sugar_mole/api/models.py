@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 
 class APIModel(models.Model):
 	name = models.CharField(max_length=200, blank=False)
+	data = models.TextField() #json data about the auth
 
 class ConditionModel(models.Model):
 	name = models.CharField(max_length=200, blank=False)
@@ -25,3 +26,7 @@ class HouseModel(models.Model):
 	members = models.ManyToManyField(User, blank=True)
 	api_available = models.ManyToManyField(APIModel, blank=True)
 	scenarios = models.ManyToManyField(ScenarioModel, blank=True)
+
+class UserExtraData(models.Model):
+	user = models.ForeignKey(User)
+	push_data = models.TextField(blank=True)
