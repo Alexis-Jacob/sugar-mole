@@ -133,7 +133,7 @@
     }
   ]
   ```
-  * Method : "Put"
+  * Method : "put"
   * body param : "data" --> data field returned when devicelist with get
   * response 
   ```javascript

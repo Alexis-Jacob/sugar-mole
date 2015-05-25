@@ -12,6 +12,7 @@ urlpatterns = patterns('',
     url(r'^api/house/', views.HouseView.as_view()),
     url(r'^api/apiDetails/', views.APIDetails.as_view()),
     url(r'^api/devicesInfo/', views.DevicesInfos.as_view()),
+    url(r'^docs/', include('rest_framework_swagger.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework'))
