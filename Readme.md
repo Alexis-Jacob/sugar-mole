@@ -135,7 +135,8 @@
   ```
   * Method : "Put"
   * body param : "data" --> data field returned when devicelist with get
-  * rep ```javascript
+  * response 
+  ```javascript
     {
       "type": 1, 
       "data": "{\"api\": \"netatmo\", \"device_id\": \"02:00:00:00:02:a0\"}", 
