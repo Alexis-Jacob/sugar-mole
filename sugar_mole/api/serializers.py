@@ -6,7 +6,7 @@ from api.models import *
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username',  'password', 'token')
+        fields = ('username',  'password')
 
 class ConditionSerializer(serializers.ModelSerializer):
 	class Meta:

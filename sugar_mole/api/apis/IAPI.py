@@ -4,3 +4,6 @@ class IAPI(object):
 
 	def auth(self, *args):
 		raise NotImplementedError
+
+	def getDevicesList(self):
+		raise NotImplemented("error")

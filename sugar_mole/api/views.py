@@ -9,7 +9,8 @@ from rest_framework import authentication, permissions
 from serializers import *
 from models import *
 import uuid as unique_uuid
-
+import json
+from apis import Netatmo
 
 class APIDetails(APIView):
 	#TODO generic stuff
@@ -39,7 +40,7 @@ class HouseView(APIView):
 		if not uuid:
 			return Response(HouseSerializer(HouseModel.objects.all(), many=True).data)
 		try:
-			return Response(HouseSerializer(HouseModel.objects.get(unique_uuid=uuid), many=True).data)
+			return Response(HouseSerializer(HouseModel.objects.get(unique_uuid=uuid)).data)
 		except HouseModel.DoesNotExist:
 			return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -73,12 +74,12 @@ class HouseView(APIView):
 				except ScenarioModel.DoesNotExist:
 					return Response({"response": "scenario not found"}, status=status.HTTP_404_NOT_FOUND)
 			elif request.data.has_key('api'):
-				if name == "netatmo":
+				if request.data["api"] == "netatmo":
 					if request.data.has_key('secret_id') and request.data.has_key('secret_access_key') and request.data.has_key('username') and request.data.has_key('password'):
 						#todo : check auth
 						data = {
-							"secret_id" : request.data["secret_id"], 
-							"secret_access_key" : request.data["secret_access_key"],
+							"clientId" : request.data["secret_id"], 
+							"clientSecret" : request.data["secret_access_key"],
 							"username" : request.data["username"],
 							"password" : request.data["password"]
 							}
@@ -86,12 +87,19 @@ class HouseView(APIView):
 						api.save()
 						house.api_available.add(api) 
 						house.save()
+						return Response(status=status.HTTP_200_OK)
+
+			elif request.data.has_key('add_member'):
+				if request.user:
+					house.members.add(request.user)
+					house.save()
+					return Response(status=status.HTTP_200_OK)
 			else:
 				return Response({"response" : "missing an option"}, status=status.HTTP_400_BAD_REQUEST)
 
 		except HouseModel.DoesNotExist:
 			return Response(status=status.HTTP_404_NOT_FOUND)
-		return Response({"response" : "missing an option"}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({"response" : "missing an option{}".format(request.data)}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserView(APIView):
     """
@@ -139,3 +147,24 @@ class UserView(APIView):
 	    	return Response({"token": token.key}, status=status.HTTP_200_OK)
 
 		return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+class DevicesInfos(APIView):
+	#authentication_classes = (authentication.TokenAuthentication,)
+	#permission_classes = (permissions.IsAuthenticated,)
+	def get(self, request):
+		apiLst = {"netatmo" : Netatmo.NetAtmo}
+		for house in HouseModel.objects.all():##Check in the orm if best way to do it 
+			for user in house.members.all():
+				if user == request.user:
+					rep = []
+					for api in house.api_available.all():
+						if apiLst.has_key(api.name):
+							tmp = apiLst[api.name]()
+							authData = json.loads(api.data)
+							tmp.auth(authData)
+							rep = rep + tmp.getDevicesList()
+					return Response(rep)
+
+		return Response(status=status.HTTP_200_OK)

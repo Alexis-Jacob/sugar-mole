@@ -59,6 +59,7 @@
 		}
 		```
     - ```api``` if you want to register to a new api: the other parameters depends on the api (check #3)
+    - ```add_member``` if you want to register an user to the house
 
 	* Return: ```HTTP_200````or ```HTTP_404```
 
@@ -69,3 +70,67 @@
 * Method: ```GET```
     * Get all the informations needed in order to register a new trademark 
     * Return a json list of api name and parameters 
+
+### 4 Devices infos:
+* Url: ```http://54.72.214.104/api/devicesInfo/```
+* Method: ```GET```
+  * Return all the devices available, with type, desc and extra informations (in order to réuse it)
+  * type:
+    + 1: Weather station, desc can contain temperature/humidity and optionnaly CO2
+    + 2: Wind infos, desc can contain   WindStrength, GustStrength, GustAngle, WindAngle
+
+  *ex: 
+  ```json
+  [
+    {
+        "type": 1, 
+        "data": "{\"api\": \"netatmo\", \"device_id\": \"02:00:00:00:02:a0\"}", 
+        "name": "Netatmo HQ", 
+        "desc": {
+            "temperature": 19.8, 
+            "humidity": 54
+        }
+    }, 
+    {
+        "type": 2, 
+        "data": "{\"api\": \"netatmo\", \"device_id\": \"06:00:00:00:00:cc\"}", 
+        "name": "Anémomètre", 
+        "desc": {
+            "WindStrength": 6, 
+            "GustStrength": 10, 
+            "GustAngle": 104, 
+            "WindAngle": 135
+        }
+    }, 
+    {
+        "type": 1, 
+        "data": "{\"api\": \"netatmo\", \"device_id\": \"03:00:00:00:1c:24\"}", 
+        "name": "Coffee Machine", 
+        "desc": {
+            "CO2": 770, 
+            "temperature": 24.4, 
+            "humidity": 43
+        }
+    }, 
+    {
+        "type": 1, 
+        "data": "{\"api\": \"netatmo\", \"device_id\": \"03:00:00:00:9f:1e\"}", 
+        "name": "Meeting Room", 
+        "desc": {
+            "CO2": 983, 
+            "temperature": 23, 
+            "humidity": 48
+        }
+    }, 
+    {}, 
+    {
+        "type": 1, 
+        "data": "{\"api\": \"netatmo\", \"device_id\": \"02:00:00:04:c5:b4\"}", 
+        "name": "Outdoor", 
+        "desc": {
+            "temperature": 23.2, 
+            "humidity": 47
+        }
+    }
+  ]
+  ```
