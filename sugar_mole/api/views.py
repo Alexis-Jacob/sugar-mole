@@ -37,6 +37,9 @@ class ActionView(APIView):
 
 class HouseView(APIView):
     def get(self, request, uuid=None):
+        """
+        Return the list of the house
+        """
         if not uuid:
             return Response(HouseSerializer(HouseModel.objects.all(), many=True).data)
         try:
@@ -45,6 +48,9 @@ class HouseView(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, uuid=None):
+        """
+        create an house and return an uuid
+        """
         while True:
             u = unique_uuid.uuid4()
             try:
@@ -57,6 +63,23 @@ class HouseView(APIView):
 
 
     def put(self, request, uuid):
+        """
+        Execute action on an house according to the parameters:<br /> 
+        - (scenario_name) (option) to do something with a scenario <br />
+        - (api) and extra data in order to register an api <br />
+        - (add_member) in order to add a member
+        ---
+        parameters:
+            - name: scenario_name
+              type: string
+              required: no
+            - name: option
+              type: string
+              required: no
+            - name: add_member
+              type: string
+              required: no
+        """
         if not uuid:
             return Response({"response": "you need to specify the uuid of the house"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -76,7 +99,7 @@ class HouseView(APIView):
             elif request.data.has_key('api'):
                 if request.data["api"] == "netatmo":
                     if request.data.has_key('secret_id') and request.data.has_key('secret_access_key') and request.data.has_key('username') and request.data.has_key('password'):
-                        #todo : check auth
+                        #todo : check auth, don't register an other api if it already exist 
                         data = {
                             "clientId" : request.data["secret_id"], 
                             "clientSecret" : request.data["secret_access_key"],
@@ -143,6 +166,17 @@ class UserView(APIView):
 
     #auth
     def put(self, request):
+        """
+        Connect a user and get the auth token
+        ---
+        parameters:
+        - name: username
+          type: string
+          required: true
+        - name: password
+          type: password
+          required: true
+        """
         if not request.data.has_key('username'):
             return Response({"response": "missing field username"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -163,11 +197,14 @@ class UserView(APIView):
 
 
 class DevicesInfos(APIView):
-    #authentication_classes = (authentication.TokenAuthentication,)
-    #permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (authentication.TokenAuthentication,)
+    permission_classes = (permissions.IsAuthenticated,)
     apiLst = {"netatmo" : Netatmo.NetAtmo}
     def get(self, request):
-
+        """
+        Get the list of device
+        ---
+        """
         if not request.data.has_key("api_name") or not request.data.has_key('data'):
             for house in HouseModel.objects.all():##Check in the orm if best way to do it 
                 for user in house.members.all():
@@ -180,10 +217,18 @@ class DevicesInfos(APIView):
                                 tmp.auth(authData)
                                 rep = rep + tmp.getDevicesList()
                         return Response(rep)
-        api_name = request.data["api_name"]
+        #api_name = request.data["api_name"]
 
 
     def put(self, request):
+        """
+        Return a specifique devices according to the date field returned by the "data" field in the get request 
+        ---
+        parameters:
+        - name: data
+          type: text
+          required: true
+        """        
         if request.data.has_key("data"):
             try:
                 data = json.loads(request.data["data"])

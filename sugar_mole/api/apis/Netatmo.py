@@ -34,9 +34,10 @@ class ClientAuth:
 				"client_secret" : clientSecret,
 				"username" : username,
 				"password" : password,
-				"scope" : "read_station"
+				"scope" : "read_station read_thermostat write_thermostat"
 				}
 		resp = postRequest(_AUTH_REQ, postParams)
+		print resp
 
 		self._clientId = clientId
 		self._clientSecret = clientSecret
@@ -82,7 +83,7 @@ class DeviceList:
 		self.getAuthToken = authData.accessToken
 		postParams = {
 				"access_token" : self.getAuthToken,
-				"app_type" : "app_station"
+				"app_type" : "app_station" #app_thermostat
 				}
 		resp = postRequest(_DEVICELIST_REQ, postParams)
 		self.rawData = resp['body']
@@ -91,6 +92,7 @@ class DeviceList:
 		self.default_station = list(self.stations.values())[0]['station_name']
 
 	def modulesNamesList(self, station=None):
+		print self.modules
 		res = [m['module_name'] for m in self.modules.values()]
 		res.append(self.stationByName(station)['module_name'])
 		return res
@@ -286,6 +288,7 @@ class NetAtmo(IAPI):
 		for d in devList.modulesNamesList():
 			device = devList.moduleByName(d)
 			if device:
+				print device["main_device"], device["_id"], device["module_name"], device["type"]
 				tmp = self.__purify__(device)
 				if len(tmp) > 0:
 					rep.append(tmp)
@@ -294,10 +297,3 @@ class NetAtmo(IAPI):
 	def getDeviceInfo(self, data):
 		devList = DeviceList(self.clt)
 		return self.__purify__(devList.moduleById(data))
-		
-
-
-#########################################################################
-	
-
-# auto-test when executed direc
