@@ -92,8 +92,14 @@ class DeviceList:
 		self.default_station = list(self.stations.values())[0]['station_name']
 
 	def modulesNamesList(self, station=None):
-		print self.modules
-		res = [m['module_name'] for m in self.modules.values()]
+		res = []
+		for elem in self.modules.values():
+			if elem.has_key('module_name'):
+				res.append(elem["module_name"])
+			else:
+				elem["module_name"] = "Unamed"
+				res.append(elem)
+		#[m['module_name'] for m in self.modules.values()]
 		res.append(self.stationByName(station)['module_name'])
 		return res
 
@@ -113,7 +119,7 @@ class DeviceList:
 			if not s : return None
 		for m in self.modules:
 			mod = self.modules[m]
-			if mod['module_name'] == module :
+			if mod.has_key('module_name') and mod['module_name'] == module :
 				if not s or mod['main_device'] == s['_id'] : return mod
 		return None
 
