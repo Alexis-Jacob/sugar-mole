@@ -230,9 +230,12 @@ class DevicesInfos(APIView):
           required: true
         """        
         if request.data.has_key("data"):
+            data = None
             try:
-                data = json.loads(request.data["data"])
+                data = json.loads(json.loads(request.data["data"]))
             except ValueError:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+            if not data:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             api_name = data["api"]
             for house in HouseModel.objects.all():##Check in the orm if best way to do it 
